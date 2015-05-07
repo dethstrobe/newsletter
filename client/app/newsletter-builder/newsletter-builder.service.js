@@ -15,7 +15,7 @@ angular.module('newsletterApp')
       var letter = {
         height: pageData.Page._HEIGHT,
         width: pageData.Page._WIDTH,
-        scale: 100,
+        scale: 1,
         image: new Image()
       };
 
@@ -35,36 +35,94 @@ angular.module('newsletterApp')
 
 
       //public methods
+      this.canvasResize = canvasResize;
+      this.letterMove = letterMove;
       this.letterRenderer = letterRenderer;
 
+      function canvasResize(windowWidth, windowHeight) {
+        view.width = cx.canvas.width = canvas.width = windowWidth;
+        view.height = cx.canvas.height = canvas.height = windowHeight;
+
+        letterRenderer();
+      };
+
+      function letterMove(event) {
+
+        if (event.which == 1) {
+
+          //do onMove function on mousemove
+          function trackDrag(onMove) {
+            function end(event) {
+              removeEventListener("mousemove", onMove);
+              removeEventListener("mouseup", end);
+            }
+            addEventListener("mousemove", onMove);
+            addEventListener("mouseup", end);
+          };
+
+          //find relative position of mouse on canvas
+          function relativePos(event, element) {
+            var rect = element.getBoundingClientRect();
+            return {
+              x: Math.floor(event.clientX - rect.left),
+              y: Math.floor(event.clientY - rect.top)
+            };
+          };
+
+          var canvas = event.currentTarget;
+          var pos = relativePos(event, canvas);
+
+          trackDrag(function(event) {
+            var newPos = relativePos(event, canvas);
+
+            view.x += newPos.x-pos.x;
+            view.y += newPos.y-pos.y;
+            letterRenderer();
+
+            view.move = true;
+            pos = newPos;
+          });
+
+
+          event.preventDefault();
+        }
+      };
+
+      var color = 100;//this is outside the letterRender function to make it looks really cool while rerendering 
       function letterRenderer() {
 
-        var color = 100;
+        //clear canvas
+        cx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // display.cx.fillStyle = 'blue';
-        // display.cx.fillRect( 0, 0, this.letter.width, this.letter.height);
 
         console.log(letter.image);
-        cx.drawImage(letter.image, 0, 0);
+        cx.drawImage(letter.image, view.x, view.y);
 
         pageData.Page.Entity.forEach(innerElement);
 
         function innerElement(element, index, array) {
           var locationArray = element._BOX.split(" ");
 
-          function drawLoc(location, size) {
-            return location * 100 / size * 8 ;
+          function drawLoc(location, size, scale) {
+            return location * 100 / size * scale;
           }
+
+          var xscale = 8.5,
+              yscale = 14.3;
 
           cx.fillStyle = '#'+color;
           cx.fillRect( 
-            drawLoc(locationArray[0], letter.width), 
-            drawLoc(locationArray[1], letter.height), 
-            drawLoc(locationArray[2]-locationArray[0], letter.width),
-            drawLoc(locationArray[3]-locationArray[1], letter.height)
+            drawLoc(locationArray[0], letter.width, xscale)+view.x, 
+            drawLoc(locationArray[1], letter.height, yscale)+view.y, 
+            drawLoc(locationArray[2]-locationArray[0], letter.width, xscale),
+            drawLoc(locationArray[3]-locationArray[1], letter.height, yscale)
           );
 
-          color+=5;
+          //this will make all kind of crazy colors while rerendering. No real reason for it.
+          if (color < 1000)
+            color++;
+          else
+            color=100;
 
           if (Array.isArray(element.Block)) {
             element.Block.forEach(innerElement);
@@ -72,6 +130,7 @@ angular.module('newsletterApp')
             innerElement(element.Block);
           }
         };
+
 
 
       }
