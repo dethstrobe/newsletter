@@ -1,10 +1,10 @@
 'use strict';
 
 angular.module('newsletterApp')
-  .controller('MainCtrl', function ($scope, $http) {
+  .controller('MainCtrl', function ($scope, $http, ) {
     $scope.awesomeThings = [];
 
-    $http.get('/api/things').success(function(awesomeThings) {
+    $http.get('/api/page1').success(function(data) {
       $scope.awesomeThings = awesomeThings;
     });
 
