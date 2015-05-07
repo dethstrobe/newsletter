@@ -45,7 +45,7 @@ angular.module('newsletterApp')
           var locationArray = element._BOX.split(" ");
 
           function drawLoc(location, size) {
-            return location * 200 / size;
+            return location * 100 / size * 8 ;
           }
 
           display.cx.fillStyle = '#'+color;
@@ -56,13 +56,16 @@ angular.module('newsletterApp')
             drawLoc(locationArray[3]-locationArray[1], display.letter.height)
           );
 
-          color++;
+          color+=5;
 
           if (Array.isArray(element.Block)) {
-            console.log(element.Block);
             element.Block.forEach(innerElement);
+          } else if (element.Block) {
+            innerElement(element.Block);
           }
         };
+
+
       }
     }
   });
