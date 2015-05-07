@@ -5,28 +5,33 @@ angular.module('newsletterApp')
     return function (canvasElement, pageData) {
       var display = this;
 
-      this.canvas = canvasElement[0];
-      this.canvas.width = $window.innerWidth;
-      this.canvas.height = $window.innerHeight;
-      this.cx = this.canvas.getContext('2d');
+      var canvas = canvasElement[0];
+      canvas.width = $window.innerWidth;
+      canvas.height = $window.innerHeight;
+      var cx = canvas.getContext('2d');
 
-      this.touch = {};
+      var touch = {};
 
-      this.letter = {
+      var letter = {
         height: pageData.Page._HEIGHT,
         width: pageData.Page._WIDTH,
-        scale: 100
+        scale: 100,
+        image: new Image()
       };
 
-      this.view = {
-        x: this.canvas.width/2 - (this.letter.width * this.letter.scale / 2),
-        y: this.canvas.height/2 - (this.letter.height * this.letter.scale / 2),
-        width: this.canvas.width,
-        height: this.canvas.height,
+      letter.image.src = '/assets/images/Pg001.png';
+      letter.image.onload = function() {console.log('image loaded');letterRenderer()};
+
+      var view = {
+        x: canvas.width/2 - (letter.width * letter.scale / 2),
+        y: canvas.height/2 - (letter.height * letter.scale / 2),
+        width: canvas.width,
+        height: canvas.height,
 
         move: false,
         select: null
       };
+
 
 
       //public methods
@@ -36,8 +41,11 @@ angular.module('newsletterApp')
 
         var color = 100;
 
-        display.cx.fillStyle = 'blue';
-        display.cx.fillRect( 0, 0, this.letter.width, this.letter.height);
+        // display.cx.fillStyle = 'blue';
+        // display.cx.fillRect( 0, 0, this.letter.width, this.letter.height);
+
+        console.log(letter.image);
+        cx.drawImage(letter.image, 0, 0);
 
         pageData.Page.Entity.forEach(innerElement);
 
@@ -48,12 +56,12 @@ angular.module('newsletterApp')
             return location * 100 / size * 8 ;
           }
 
-          display.cx.fillStyle = '#'+color;
-          display.cx.fillRect( 
-            drawLoc(locationArray[0], display.letter.width), 
-            drawLoc(locationArray[1], display.letter.height), 
-            drawLoc(locationArray[2]-locationArray[0], display.letter.width),
-            drawLoc(locationArray[3]-locationArray[1], display.letter.height)
+          cx.fillStyle = '#'+color;
+          cx.fillRect( 
+            drawLoc(locationArray[0], letter.width), 
+            drawLoc(locationArray[1], letter.height), 
+            drawLoc(locationArray[2]-locationArray[0], letter.width),
+            drawLoc(locationArray[3]-locationArray[1], letter.height)
           );
 
           color+=5;
