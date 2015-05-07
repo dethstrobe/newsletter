@@ -4,7 +4,8 @@ angular.module('newsletterApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'cb.x2js'
 ])
   .config(function ($routeProvider, $locationProvider) {
     $routeProvider
