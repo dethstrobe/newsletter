@@ -10,11 +10,6 @@ angular.module('newsletterApp')
       	scope.newsletterCanvas = element;
 
 
-	    //resizes canvas if window size changes
-	    $window.onresize = function () {
-			scope.currentPage.canvasResize($window.innerWidth, $window.innerHeight);
-	    }
-
 	    //event listeners
 	    element.on('mousedown', function(event) {
           scope.currentPage.letterMove(event);

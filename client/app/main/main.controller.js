@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('newsletterApp')
-  .controller('MainCtrl', function ($scope, $http, x2js, newsletterBuilder) {
+  .controller('MainCtrl', function ($scope, $http, $window, x2js, newsletterBuilder) {
     $scope.newsletterSections = null;
 
     $http.get('/api/page1').success(function(data) {
@@ -11,6 +11,12 @@ angular.module('newsletterApp')
       	$scope.currentPage = new newsletterBuilder($scope.newsletterCanvas, $scope.newsletterSections);
 
       	$scope.currentPage.letterRenderer();
+
+      	
+	    //resizes canvas if window size changes
+	    $window.onresize = function () {
+			$scope.currentPage.canvasResize($window.innerWidth, $window.innerHeight);
+	    }
     });
 
   });
