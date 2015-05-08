@@ -15,7 +15,7 @@ angular.module('newsletterApp')
       var letter = {
         height: pageData.Page._HEIGHT,
         width: pageData.Page._WIDTH,
-        scale: 1,
+        scale: 2,
         image: new Image()
       };
 
@@ -68,8 +68,11 @@ angular.module('newsletterApp')
       console.log(articleSections);
 
 
+
+
       //public methods
       this.canvasResize = canvasResize;
+      this.centerOnArticle = centerOnArticle;
       this.letterMove = letterMove;
       this.letterRenderer = letterRenderer;
 
@@ -79,6 +82,17 @@ angular.module('newsletterApp')
 
         letterRenderer();
       };
+
+      function centerOnArticle(artId) {
+        var selected = articleSections[artId];
+
+        letter.scale = canvas.width/selected.loc.width;
+        view.x = -selected.loc.x * letter.scale;
+        view.y = -selected.loc.y * letter.scale;
+
+        console.log(view.x, view.y);
+        letterRenderer();
+      }
 
       function letterMove(event) {
 
@@ -128,18 +142,26 @@ angular.module('newsletterApp')
         //clear canvas
         cx.clearRect(0, 0, canvas.width, canvas.height);
 
-        cx.drawImage(letter.image, view.x, view.y);
+        cx.drawImage(
+          letter.image, 
+          view.x, 
+          view.y, 
+          letter.width * letter.scale, 
+          letter.height * letter.scale
+        );
 
         for(var key in articleSections) {
           var element = articleSections[key];
 
           cx.fillStyle = '#'+color;
           cx.fillRect( 
-            element.loc.x+view.x, 
-            element.loc.y+view.y, 
-            element.loc.width,
-            element.loc.height
+            (element.loc.x*letter.scale+view.x), 
+            (element.loc.y*letter.scale+view.y), 
+            (element.loc.width*letter.scale),
+            (element.loc.height*letter.scale)
           );
+
+          console.log(view.x, view.y);
 
           //this will make all kind of crazy colors while rerendering. No real reason for it.
           if (color < 1000)
