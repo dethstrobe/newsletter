@@ -48,12 +48,11 @@ angular.module('newsletterApp')
         }
 
       
-
         articleSections[element._ID] = {
           name: element.Name,
           loc: {
             x: finderLoc(currentLocationArray[0], letter.width, xscale),
-            y: finderLoc(currentLocationArray[1], letter.width, yscale),
+            y: finderLoc(currentLocationArray[1], letter.height, yscale),
             width: finderLoc(currentLocationArray[2]-currentLocationArray[0], letter.width, xscale),
             height: finderLoc(currentLocationArray[3]-currentLocationArray[1], letter.height, yscale)
           }
@@ -131,24 +130,15 @@ angular.module('newsletterApp')
 
         cx.drawImage(letter.image, view.x, view.y);
 
-        pageData.Page.Entity.forEach(innerElement);
-
-        function innerElement(element, index, array) {
-          var locationArray = element._BOX.split(" ");
-
-          function drawLoc(location, size, scale) {
-            return location * 100 / size * scale;
-          }
-
-          var xscale = 8.5,
-              yscale = 14.3;
+        for(var key in articleSections) {
+          var element = articleSections[key];
 
           cx.fillStyle = '#'+color;
           cx.fillRect( 
-            drawLoc(locationArray[0], letter.width, xscale)+view.x, 
-            drawLoc(locationArray[1], letter.height, yscale)+view.y, 
-            drawLoc(locationArray[2]-locationArray[0], letter.width, xscale),
-            drawLoc(locationArray[3]-locationArray[1], letter.height, yscale)
+            element.loc.x+view.x, 
+            element.loc.y+view.y, 
+            element.loc.width,
+            element.loc.height
           );
 
           //this will make all kind of crazy colors while rerendering. No real reason for it.
@@ -156,16 +146,12 @@ angular.module('newsletterApp')
             color++;
           else
             color=100;
-
-          if (Array.isArray(element.Block)) {
-            element.Block.forEach(innerElement);
-          } else if (element.Block) {
-            innerElement(element.Block);
           }
-        };
+
+        
 
 
 
-      }
+      };
     }
   });
