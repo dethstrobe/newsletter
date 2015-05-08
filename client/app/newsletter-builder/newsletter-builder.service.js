@@ -80,6 +80,9 @@ angular.module('newsletterApp')
       this.centerOnArticle = centerOnArticle;
       this.letterMove = letterMove;
       this.letterRenderer = letterRenderer;
+      this.scaleToFit = scaleToFit;
+      this.selected = function() {return view.select};
+      this.zoomOut = zoomOut;
 
       function canvasResize(windowWidth, windowHeight) {
         view.width = cx.canvas.width = canvas.width = windowWidth;
@@ -95,14 +98,16 @@ angular.module('newsletterApp')
 
         if (scale < 1) {
           letter.scale = scale;
+        } else {
+          letter.scale = 1;
         }
 
-        view.x = findCenter('width', view.select.loc.x + view.select.loc.width);
-        view.y = findCenter('height', view.select.loc.y + view.select.loc.height);
+        view.x = canvas.width /2 - (view.select.loc.x + view.select.loc.width/2)*letter.scale;
+        view.y = canvas.height /2 - (view.select.loc.y + view.select.loc.height/2)*letter.scale;
 
         console.log(view.x, view.y);
         letterRenderer();
-      }
+      };
 
       function letterMove(event) {
 
@@ -146,7 +151,7 @@ angular.module('newsletterApp')
         }
       };
 
-      var color = 100;//this is outside the letterRender function to make it looks really cool while rerendering 
+      //var color = 100;//this is outside the letterRender function to make it looks really cool while rerendering 
       function letterRenderer() {
 
         //clear canvas
@@ -185,11 +190,23 @@ angular.module('newsletterApp')
         //   else
         //     color=100;
         //   }
+      };
 
-        
+      function scaleToFit (width, height) {
+        if (height > canvas.height) {
+          letter.scale = canvas.height/height;
+        }
+      };
 
+      function zoomOut () {
+        scaleToFit(letter.width, letter.height);
 
+        view.x = findCenter('width', letter.width);
+        view.y = findCenter('height', letter.height);
 
+        view.select = null;
+
+        letterRenderer();
       };
     }
   });

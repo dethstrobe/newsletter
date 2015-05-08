@@ -10,7 +10,7 @@ angular.module('newsletterApp')
 
       	$scope.currentPage = new newsletterBuilder($scope.newsletterCanvas, $scope.newsletterSections);
 
-      	$scope.currentPage.letterRenderer();
+      	$scope.currentPage.zoomOut();
 
       	
 	    //resizes canvas if window size changes
