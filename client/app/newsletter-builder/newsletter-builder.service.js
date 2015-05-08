@@ -1,16 +1,13 @@
 'use strict';
 
 angular.module('newsletterApp')
-  .factory('newsletterBuilder', function ($window) {
+  .factory('NewsletterBuilder', function ($window) {
     return function (canvasElement, pageData) {
-      var display = this;
 
       var canvas = canvasElement[0];
       canvas.width = $window.innerWidth;
       canvas.height = $window.innerHeight;
       var cx = canvas.getContext('2d');
-
-      var touch = {};
 
       var letter = {
         height: pageData.Page._HEIGHT,
@@ -20,7 +17,10 @@ angular.module('newsletterApp')
       };
 
       letter.image.src = '/assets/images/Pg001.png';
-      letter.image.onload = function() {console.log('image loaded');letterRenderer()};
+      letter.image.onload = function() {
+        console.log('image loaded');
+        letterRenderer();
+      };
 
       var view = {
         x: findCenter('width', letter.width),
@@ -38,7 +38,7 @@ angular.module('newsletterApp')
 
       //adds each article section to array to avoid extra calculations
       function createSection(element) {
-        var currentLocationArray = element._BOX.split(" ");
+        var currentLocationArray = element._BOX.split(' ');
 
         var xscale = 8.5,
             yscale = 14.3;
@@ -70,7 +70,7 @@ angular.module('newsletterApp')
 
 
       function findCenter(measurementDirection, measurementLength) {
-        return canvas[measurementDirection] /2 - ( measurementLength * letter.scale / 2 )
+        return canvas[measurementDirection] /2 - ( measurementLength * letter.scale / 2 );
       }
 
 
@@ -81,7 +81,7 @@ angular.module('newsletterApp')
       this.letterMove = letterMove;
       this.letterRenderer = letterRenderer;
       this.scaleToFit = scaleToFit;
-      this.selected = function() {return view.select};
+      this.selected = function() {return view.select;};
       this.zoomOut = zoomOut;
 
       function canvasResize(windowWidth, windowHeight) {
@@ -89,7 +89,7 @@ angular.module('newsletterApp')
         view.height = cx.canvas.height = canvas.height = windowHeight;
 
         letterRenderer();
-      };
+      }
 
       function centerOnArticle(artId) {
         view.select = articleSections[artId];
@@ -106,8 +106,8 @@ angular.module('newsletterApp')
         view.y = canvas.height /2 - (view.select.loc.y + view.select.loc.height/2)*letter.scale;
 
         console.log(view.x, view.y);
-        letterRenderer();
-      };
+        letterRenderer()
+      }
 
       function letterMove(event) {
 
@@ -121,7 +121,7 @@ angular.module('newsletterApp')
             }
             addEventListener("mousemove", onMove);
             addEventListener("mouseup", end);
-          };
+          }
 
           //find relative position of mouse on canvas
           function relativePos(event, element) {
@@ -130,7 +130,7 @@ angular.module('newsletterApp')
               x: Math.floor(event.clientX - rect.left),
               y: Math.floor(event.clientY - rect.top)
             };
-          };
+          }
 
           var canvas = event.currentTarget;
           var pos = relativePos(event, canvas);
@@ -149,7 +149,7 @@ angular.module('newsletterApp')
 
           event.preventDefault();
         }
-      };
+      }
 
       //var color = 100;//this is outside the letterRender function to make it looks really cool while rerendering 
       function letterRenderer() {
@@ -190,13 +190,13 @@ angular.module('newsletterApp')
         //   else
         //     color=100;
         //   }
-      };
+      }
 
       function scaleToFit (width, height) {
         if (height > canvas.height) {
           letter.scale = canvas.height/height;
         }
-      };
+      }
 
       function zoomOut () {
         scaleToFit(letter.width, letter.height);
@@ -207,6 +207,6 @@ angular.module('newsletterApp')
         view.select = null;
 
         letterRenderer();
-      };
-    }
+      }
+    };
   });

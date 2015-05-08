@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('newsletterApp')
-  .directive('newsletterCanvas', function ($window) {
+  .directive('newsletterCanvas', function () {
     return {
       //templateUrl: 'app/newsletter-canvas/newsletter-canvas.html',
       restrict: 'EA',
