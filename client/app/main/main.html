@@ -1,3 +1,9 @@
 
 
 <canvas newsletter-canvas class="news-canvas">Your Browser doesn't support Canvas</canvas>
+
+<div class="article-sections">
+<ul class="list-unstyled">
+<li ng-repeat="section in currentPage.articleSections"><a ng-click="currentPage.centerOnArticle(section.id)">{{section.id}}</a></li>
+</ul>
+</div>

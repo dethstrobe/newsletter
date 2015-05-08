@@ -15,7 +15,7 @@ angular.module('newsletterApp')
       var letter = {
         height: pageData.Page._HEIGHT,
         width: pageData.Page._WIDTH,
-        scale: 2,
+        scale: 1,
         image: new Image()
       };
 
@@ -23,8 +23,8 @@ angular.module('newsletterApp')
       letter.image.onload = function() {console.log('image loaded');letterRenderer()};
 
       var view = {
-        x: canvas.width/2 - (letter.width * letter.scale / 2),
-        y: canvas.height/2 - (letter.height * letter.scale / 2),
+        x: findCenter('width', letter.width),
+        y: findCenter('height', letter.height),
         width: canvas.width,
         height: canvas.height,
 
@@ -50,6 +50,7 @@ angular.module('newsletterApp')
       
         articleSections[element._ID] = {
           name: element.Name,
+          id: element._ID,
           loc: {
             x: finderLoc(currentLocationArray[0], letter.width, xscale),
             y: finderLoc(currentLocationArray[1], letter.height, yscale),
@@ -68,9 +69,13 @@ angular.module('newsletterApp')
       console.log(articleSections);
 
 
+      function findCenter(measurementDirection, measurementLength) {
+        return canvas[measurementDirection] /2 - ( measurementLength * letter.scale / 2 )
+      }
 
 
       //public methods
+      this.articleSections = articleSections;
       this.canvasResize = canvasResize;
       this.centerOnArticle = centerOnArticle;
       this.letterMove = letterMove;
@@ -84,11 +89,16 @@ angular.module('newsletterApp')
       };
 
       function centerOnArticle(artId) {
-        var selected = articleSections[artId];
+        view.select = articleSections[artId];
 
-        letter.scale = canvas.width/selected.loc.width;
-        view.x = -selected.loc.x * letter.scale;
-        view.y = -selected.loc.y * letter.scale;
+        var scale = canvas.width/view.select.loc.width;
+
+        if (scale < 1) {
+          letter.scale = scale;
+        }
+
+        view.x = findCenter('width', view.select.loc.x + view.select.loc.width);
+        view.y = findCenter('height', view.select.loc.y + view.select.loc.height);
 
         console.log(view.x, view.y);
         letterRenderer();
@@ -150,25 +160,31 @@ angular.module('newsletterApp')
           letter.height * letter.scale
         );
 
-        for(var key in articleSections) {
-          var element = articleSections[key];
+        if (view.select) {
+          cx.fillStyle = 'RGBa(255, 255, 0, 0.3)';
+          cx.fillRect(view.select.loc.x * letter.scale + view.x,
+          view.select.loc.y * letter.scale + view.y, 
+          view.select.loc.width * letter.scale, 
+          view.select.loc.height * letter.scale);
+        }
 
-          cx.fillStyle = '#'+color;
-          cx.fillRect( 
-            (element.loc.x*letter.scale+view.x), 
-            (element.loc.y*letter.scale+view.y), 
-            (element.loc.width*letter.scale),
-            (element.loc.height*letter.scale)
-          );
+        // for(var key in articleSections) {
+        //   var element = articleSections[key];
 
-          console.log(view.x, view.y);
+        //   cx.fillStyle = '#'+color;
+        //   cx.fillRect( 
+        //     (element.loc.x*letter.scale+view.x), 
+        //     (element.loc.y*letter.scale+view.y), 
+        //     (element.loc.width*letter.scale),
+        //     (element.loc.height*letter.scale)
+        //   );
 
-          //this will make all kind of crazy colors while rerendering. No real reason for it.
-          if (color < 1000)
-            color++;
-          else
-            color=100;
-          }
+        //   //this will make all kind of crazy colors while rerendering. No real reason for it.
+        //   if (color < 1000)
+        //     color++;
+        //   else
+        //     color=100;
+        //   }
 
         
 
