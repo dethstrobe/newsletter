@@ -32,6 +32,41 @@ angular.module('newsletterApp')
         select: null
       };
 
+      var articleSections = {};
+
+      pageData.Page.Entity.forEach(createSection);
+
+      //adds each article section to array to avoid extra calculations
+      function createSection(element) {
+        var currentLocationArray = element._BOX.split(" ");
+
+        var xscale = 8.5,
+            yscale = 14.3;
+
+        function finderLoc(location, size, scale) {
+          return location * 100 / size * scale;
+        }
+
+      
+
+        articleSections[element._ID] = {
+          name: element.Name,
+          loc: {
+            x: finderLoc(currentLocationArray[0], letter.width, xscale),
+            y: finderLoc(currentLocationArray[1], letter.width, yscale),
+            width: finderLoc(currentLocationArray[2]-currentLocationArray[0], letter.width, xscale),
+            height: finderLoc(currentLocationArray[3]-currentLocationArray[1], letter.height, yscale)
+          }
+        };
+
+        if (Array.isArray(element.Block)) {
+          element.Block.forEach(createSection);
+        } else if (element.Block) {
+          createSection(element.Block);
+        }
+      };
+
+      console.log(articleSections);
 
 
       //public methods
@@ -94,8 +129,6 @@ angular.module('newsletterApp')
         //clear canvas
         cx.clearRect(0, 0, canvas.width, canvas.height);
 
-
-        console.log(letter.image);
         cx.drawImage(letter.image, view.x, view.y);
 
         pageData.Page.Entity.forEach(innerElement);
